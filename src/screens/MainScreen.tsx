@@ -1,19 +1,14 @@
 import * as React from 'react';
 import { useState } from 'react';
-<<<<<<< Updated upstream
-import { StyleSheet, Text, TextInput, TouchableOpacity, View,Button,Switch } from 'react-native';
-=======
+
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Button, Switch } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
->>>>>>> Stashed changes
 
 const MainScreen = () => {
     return (
-<<<<<<< Updated upstream
         <View>
             <Text>메인 화면</Text>
-=======
         <View style={{ flex: 1, alignItems: 'center' }}>
             <View style={{ width: '100%', height: 100, backgroundColor: 'blue' }}>
                 <TouchableOpacity
@@ -73,13 +68,9 @@ const MainScreen = () => {
                     <Text style={{ fontSize: 20, fontWeight: 'bold', marginLeft: 15 }}>근무지</Text>
                 </TouchableOpacity>
             </View>
->>>>>>> Stashed changes
         </View>
     );
 };
 
-<<<<<<< Updated upstream
+
 export default MainScreen;
-=======
-export default MainScreen;
->>>>>>> Stashed changes

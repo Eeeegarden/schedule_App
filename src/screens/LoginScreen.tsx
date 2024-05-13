@@ -1,10 +1,26 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View,Button,Switch } from 'react-native';
+import {Alert} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {signIn} from '../libs/auth';
+import firestore from '@react-native-firebase/firestore';
+
 
 const LoginScreen = ({ navigation }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const handleLoginPress = async () => {
+        try{
+            const {user} = await signIn({email, password});
+            Alert.alert('로그인 성공');
+            navigation.replace('MainScreen');
+        }
+        catch (e) {
+            Alert.alert('로그인 실패');
+        }
+    }
     return (
         <View style={styles.container}>
             <Text style={styles.appName}>AppName</Text>
@@ -16,16 +32,19 @@ const LoginScreen = ({ navigation }) => {
                             placeholder="Email"
                             keyboardType="email-address"
                             autoCapitalize="none"
+                            onChangeText={setEmail}
                             />
                         <TextInput
                             style={styles.input}
                             placeholder="Password"
                             secureTextEntry={true}
+                            onChangeText={setPassword}
                             />
                     </View>
-                    <TouchableOpacity style={styles.loginButton}>
-                    <Text style={styles.loginButtonText}>LOGIN</Text>
+                    <TouchableOpacity onPress={handleLoginPress} style={styles.loginButton}>
+                        <Text style={styles.loginButtonText}>LOGIN</Text>
                     </TouchableOpacity>
+
                 </View>
             </View>
             <View style={styles.bottomContainer}>

@@ -9,48 +9,62 @@ import { Entypo } from '@expo/vector-icons';
 const Tab = createBottomTabNavigator();
 
 const MainScreen = () => {
-    return (
-        <NavigationContainer>
-            <Tab.Navigator initialRouteName="Home">
-                <Tab.Screen name="Home" component={HomeScreen} options={{tabBarIcon: () => <Entypo name="home" size={24} color="black"/>}}></Tab.Screen>
-                <Tab.Screen name="Calendar" component={CalendarScreen} options={{tabBarIcon: () => <Entypo name="calendar" size={24} color="black"/>}}></Tab.Screen>
-                <Tab.Screen name="Stat" component={StatScreen} options={{tabBarIcon: () => <Entypo name="bar-graph" size={24} color="black"/>}}></Tab.Screen>
-                <Tab.Screen name="Preferences" component={PreferencesScreen} options={{tabBarIcon: () => <Entypo name="cog" size={24} color="black"/>}}></Tab.Screen>
-            </Tab.Navigator>
-        </NavigationContainer>
-    );
+  return (
+      <View style={styles.container}>
+          <Text>MainScreen</Text>
+      </View>
+  );
 };
 
+// const MainScreen = ({ navigation }) => {
+//   return (
+//       <Tab.Navigator initialRouteName="Home">
+//           <Tab.Screen name="Home" component={HomeScreen} options={{tabBarIcon: () => <Entypo name="home" size={24} color="black"/>}} />
+//           <Tab.Screen name="Calendar" component={CalendarScreen} options={{tabBarIcon: () => <Entypo name="calendar" size={24} color="black"/>}} />
+//           <Tab.Screen name="Stat" component={StatScreen} options={{tabBarIcon: () => <Entypo name="bar-graph" size={24} color="black"/>}} />
+//           <Tab.Screen name="Preferences" component={PreferencesScreen} options={{tabBarIcon: () => <Entypo name="cog" size={24} color="black"/>}} />
+//       </Tab.Navigator>
+//   );
+// };
+
 const HomeScreen = () => {
-    return (
-        <View>
-            <Text>홈 화면</Text>
-        </View>
-    );
+  return (
+      <View>
+          <Text>홈 화면</Text>
+      </View>
+  );
 };
 
 const CalendarScreen = () => {
-    return (
-        <View>
-            <Text>캘린더 화면</Text>
-        </View>
-    );
+  return (
+      <View>
+          <Text>캘린더 화면</Text>
+      </View>
+  );
 };
 
 const StatScreen = () => {
-    return (
-        <View>
-            <Text>근무 통계 화면</Text>
-        </View>
-    );
+  return (
+      <View>
+          <Text>근무 통계 화면</Text>
+      </View>
+  );
 };
 
 const PreferencesScreen = () => {
-    return (
-        <View>
-            <Text>환경 설정 화면</Text>
-        </View>
-    );
+  return (
+      <View>
+          <Text>환경 설정 화면</Text>
+      </View>
+  );
 };
 
-export { HomeScreen, CalendarScreen, StatScreen, PreferencesScreen };
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+  },
+});
+
+export default MainScreen;

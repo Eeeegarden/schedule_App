@@ -25,16 +25,15 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* 테스트로 인해 순서 변경 했습니다 */}
-        <Stack.Screen
-          name="MainNavigator"
-          component={MainNavigator}
-          options={{headerShown: false}}
-        />
         <Stack.Screen
           name="Auth"
           component={MyStack}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MainNavigator"
+          component={MainNavigator}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>

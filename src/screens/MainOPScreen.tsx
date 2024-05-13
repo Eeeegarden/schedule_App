@@ -1,10 +1,16 @@
 import * as React from 'react';
 import {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, TextInput,Alert,Modal} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 
 const MainOPScreen = () => {
+    const [workplace, setWorkplace] = useState('');
+    const [businessNumberInputVisible, setBusinessNumberInputVisible] = useState(false);
+    const [businessNumber, setBusinessNumber] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+
     {/* 오늘 날짜 불러오는 함수*/}
     const getTodayDate = () => {
         const today = new Date();
@@ -23,6 +29,17 @@ const MainOPScreen = () => {
     {/* 근무 공지사항 저장 함수 */}
     const saveNotice = () => {
         {/* 나중에 DB 저장 코드*/}
+    };
+
+    const handleAddWorkplace = () => {
+        setModalVisible(true); // 모달 열기
+    };
+
+    const handleBusinessNumberSubmit = () => {
+        // 여기서는 임의의 로직으로 사업자 번호에 맞는 근무지를 가져온다고 가정
+        const fetchedWorkplace = ''; // 사업자 번호에 따른 근무지 가져오기
+        setWorkplace(fetchedWorkplace); // 근무지 업데이트
+        setModalVisible(false); // 모달 닫기
     };
 
     return (
@@ -71,6 +88,33 @@ const MainOPScreen = () => {
                     multiline={true}
                 />
             </View>
+
+            {/* 근무지 추가 버튼 */}
+            <TouchableOpacity style={styles.manageButton} onPress={handleAddWorkplace}>
+                <Text style={styles.manageButtonText}>근무지 추가</Text>
+            </TouchableOpacity>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={{color:'black'}}>사업자 번호를 입력하세요</Text>
+                        <TextInput
+                            style={styles.businessNumberInput}
+                            onChangeText={setBusinessNumber}
+                        />
+                        <TouchableOpacity style={styles.submitButton} onPress={handleBusinessNumberSubmit}>
+                            <Text style={styles.submitButtonText}>확인</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );    
 };
@@ -107,7 +151,7 @@ const styles = StyleSheet.create({
     },
     titleContainer: {
         width: '80%',
-        alignItems: 'flex-start', //왼쪽 정렬
+        alignItems: 'flex-start', 
         marginBottom: 10,
     },
     todayText: {
@@ -172,7 +216,38 @@ const styles = StyleSheet.create({
     saveButtonText: {
         color: 'white',
         fontSize: 16,
-    }
+    },
+    businessNumberInput: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: 'black',
+        borderRadius: 10,
+        padding: 20,
+        marginRight: 10,
+        
+    },
+    submitButton: {
+        backgroundColor: '#3498db',
+        padding: 10,
+        borderRadius: 5,
+    },
+    submitButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+    },
 });
+
 
 export default MainOPScreen;

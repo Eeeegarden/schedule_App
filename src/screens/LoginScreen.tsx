@@ -7,15 +7,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {signIn} from '../libs/auth';
 import firestore from '@react-native-firebase/firestore';
 
-
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    // 로그인 주체가 owner인지 user인지 따라서 로그인 화면 분리필요
     const handleLoginPress = async () => {
         try{
             const {user} = await signIn({email, password});
             Alert.alert('로그인 성공');
-            navigation.replace('MainScreen');
+            navigation.replace('MainNavigator');
         }
         catch (e) {
             Alert.alert('로그인 실패');

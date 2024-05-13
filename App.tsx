@@ -6,18 +6,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import SignupScreen from "./src/screens/SignupScreen";
 import LoginScreen from "./src/screens/LoginScreen";
-import MainScreen from "./src/screens/MainScreen";
 import FindpwScreen from "./src/screens/FindpwScreen";
+import MainNavigator from './src/screens/MainNavigator';
 
 const Stack = createNativeStackNavigator();
 
 const MyStack = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="LoginScreen" component={LoginScreen} />
-      <Stack.Screen name="SignupScreen" component={SignupScreen} />
-      <Stack.Screen name="FindpwScreen" component={FindpwScreen} />
-      <Stack.Screen name="MainScreen" component={MainScreen} />
+      <Stack.Screen name="LoginScreen" component={LoginScreen} options={{headerShown: false}}/>
+      <Stack.Screen name="SignupScreen" component={SignupScreen} options={{headerShown: false}}/>
+      <Stack.Screen name="FindpwScreen" component={FindpwScreen} options={{headerShown: false}}/>
     </Stack.Navigator>
   );
 };
@@ -26,8 +25,14 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        {/* 테스트로 인해 순서 변경 했습니다 */}
         <Stack.Screen
-          name="Main"
+          name="MainNavigator"
+          component={MainNavigator}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Auth"
           component={MyStack}
           options={{ headerShown: false }}
         />

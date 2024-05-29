@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, TouchableOpacity, Dimensions } from 're
 import { BarChart } from 'react-native-chart-kit';
 /* react-native-chart-kit을 install할 때 react-native-svg도 같이 install 해 주세요.*/
 
-const MyWorkStat = () => {
+const WorkStat_A = () => {
     const [employeers, setemployeers] = useState([
       { name: '알바생1', status: '근무', wait: true, approval: '', datasets: [{worktime : [37, 90, 48, 67]}] },
       { name: '알바생2', status: '근무', wait: false, approval: '', datasets: [{worktime : [0, 0, 0, 32]}] },
@@ -24,11 +24,32 @@ const MyWorkStat = () => {
     let salary = expected * hourwage;  // 근무 시간 * 시급
 
     const data = {
-      labels: ['2024-01', '2024-02', '2024-03', '2024-04'],
+      labels: [/*'2024-02', '2024-03', '2024-04', '2024-05'*/],
       datasets: [{
         data: employee1Data,
       }]
     };
+
+    {/* 이번 달 기준으로 3개월 전까지의 연도-달을 저장하는 함수 */}
+    const getTodayMonth= () => {
+      const today = new Date();
+      let year = today.getFullYear();
+      let month = today.getMonth();
+
+      const tmplabels = [];
+      for (let i = 0; i < 4; i++){
+        const month00 = (month + 1).toString().padStart(2, '0');
+        tmplabels.push(`${year}-${month00}`);
+
+        month -= 1;
+        if (month < 0){
+          month = 11;
+          year -= 1;
+        }
+      }
+      data.labels = tmplabels.reverse();
+    };
+    getTodayMonth()
 
     return(
       <View style={{paddingVertical: 25}}>
@@ -86,4 +107,4 @@ const styles = StyleSheet.create({
     },
   });
       
-export default MyWorkStat;
+export default WorkStat_A;

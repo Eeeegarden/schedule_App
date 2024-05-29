@@ -9,8 +9,8 @@ import LoginScreen from "./src/screens/LoginScreen";
 import FindpwScreen from "./src/screens/FindpwScreen";
 import MainNavigator from './src/screens/MainNavigator';
 import ManagementAlba from "./src/screens/ManagementAlba";
-import WorkStat_A from "./src/screens/MyWorkStat";
-import WorkStat_M from "./src/screens/OPWorkStat";
+// import MyWorkStat from "./src/screens/MyWorkStat"; 
+
 
 const Stack = createNativeStackNavigator();
 

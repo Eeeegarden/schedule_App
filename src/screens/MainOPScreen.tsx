@@ -1,15 +1,21 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, TextInput,Alert,Modal} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const MainOPScreen = () => {
     const [workplace, setWorkplace] = useState('');
     const [businessNumberInputVisible, setBusinessNumberInputVisible] = useState(false);
     const [businessNumber, setBusinessNumber] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
+    const [noticeText, setNoticeText] = useState('');
+    const [numberNotifications, setNumberNotifications] = useState(3);
+
+    // 현재 로그인한 사용자의 UID 가져오기
+    const userUid = auth().currentUser.uid;
 
     {/* 오늘 날짜 불러오는 함수*/}
     const getTodayDate = () => {
@@ -21,15 +27,83 @@ const MainOPScreen = () => {
         });
     };
 
-    {/* 근무 공지사항 텍스트 상태 */}
-    const [noticeText, setNoticeText] = useState('');
-    {/* 알림 개수 변수 */}
-    const numberNotifications = 3;
+    const fetchWorkplaceAndNotice = async () => {
+        try {
+            // owners 컬렉션에서 해당 사용자의 문서 가져오기
+            const ownerDoc = await firestore().collection('owners').doc(userUid).get();
+            
+            if (!ownerDoc.exists) {
+                console.log('해당 사용자의 데이터가 없습니다.');
+                return;
+            }
+            
+            const ownerData = ownerDoc.data();
+            console.log('Owner Data:', ownerData); // Owner 데이터 확인
+            
+            // owners 컬렉션에서 가져온 사용자의 businessNumber 값으로 workplace 컬렉션에서 문서 가져오기
+            if (ownerData && ownerData.businessnumber) {
+                const workplaceDoc = await firestore().collection('workplace').where('businessnumber', '==', ownerData.businessnumber).get();
+                
+                if (workplaceDoc.empty) {
+                    // 해당 businessNumber에 맞는 근무지가 없는 경우
+                    console.log('uid 에러 : 해당 businessNumber에 맞는 근무지가 없습니다.');
+                    return;
+                }
+        
+                // 근무지 문서에서 notice 값을 가져와서 noticeText 상태 업데이트
+                const workplaceData = workplaceDoc.docs[0].data(); // 첫 번째 문서의 데이터 가져오기
+                console.log('Workplace Data:', workplaceData); // 근무지 데이터 확인
+                setWorkplace(workplaceData.businessnumber); // 근무지 업데이트
+                setNoticeText(workplaceData.notice); // 공지사항 업데이트
+            } else {
+                console.log('사용자 데이터 또는 사업자 번호가 없습니다.');
+            }
+        } catch (error) {
+            console.error('Error fetching workplace and notice:', error);
+        }
+    };    
+
+    useEffect(() => {
+        // 화면이 마운트될 때 한 번 실행하여 근무지와 공지사항 가져오기
+        fetchWorkplaceAndNotice();
+    }, []);
 
     {/* 근무 공지사항 저장 함수 */}
-    const saveNotice = () => {
-        {/* 나중에 DB 저장 코드*/}
-    };
+    const saveNotice = async () => {
+        try {
+            // owners 컬렉션에서 해당 사용자의 문서 가져오기
+            const ownerDoc = await firestore().collection('owners').doc(userUid).get();
+            
+            if (!ownerDoc.exists) {
+                console.log('해당 사용자의 데이터가 없습니다.');
+                return;
+            }
+            const ownerData = ownerDoc.data();
+            
+            // 현재 사용자의 businessNumber 값을 기준으로 근무지 문서를 찾음
+            const workplaceDoc = await firestore().collection('workplace').where('businessnumber', '==', ownerData.businessnumber).get();
+    
+            if (workplaceDoc.empty) {
+                // 해당 businessNumber에 맞는 근무지가 없는 경우
+                console.log('공지 에러 : 해당 businessNumber에 맞는 근무지가 없습니다.');
+                return;
+            }
+    
+            // 근무지 문서가 있는 경우, 첫 번째 문서의 reference를 가져옴
+            const workplaceRef = workplaceDoc.docs[0].ref;
+    
+            // 근무지 문서의 notice 필드를 업데이트
+            await workplaceRef.update({ notice: noticeText });
+            console.log('공지사항이 업데이트되었습니다:', noticeText); // 업데이트된 공지사항 로그로 출력
+    
+            // 알림 메시지 표시
+            Alert.alert('공지사항이 저장되었습니다.');
+        } catch (error) {
+            console.error('Error saving notice:', error);
+            // 에러 발생 시 알림 메시지 표시
+            Alert.alert('공지사항을 저장하는 중에 오류가 발생했습니다.');
+        }
+    };    
 
     const handleAddWorkplace = () => {
         setModalVisible(true); // 모달 열기

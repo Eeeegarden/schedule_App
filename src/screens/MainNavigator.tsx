@@ -5,8 +5,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import MainScreen from './MainScreen';
 import MainOPScreen from './MainOPScreen';
 import TestScreen1 from './TestScreen1';
-import TestScreen2 from './TestScreen2';
-import TestScreen3 from './TestScreen3';
+import MyWorkStat from './MyWorkStat';
+import OPWorkStat from './OPWorkStat';
 import TestScreen4 from './TestScreen4';
 
 const Tab = createBottomTabNavigator();
@@ -24,8 +24,8 @@ const MainNavigator = () => {
             {!isAdmin && <Tab.Screen name="Main" component={MainScreen} options={{title: '홈', headerShown: false, tabBarIcon: ({color, size}) => (<Entypo name="home" size={size} color={color}/>)}}/>}
             {isAdmin && <Tab.Screen name="Main_OP" component={MainOPScreen} options={{title: '홈', headerShown: false, tabBarIcon: ({color, size}) => (<Entypo name="home" size={size} color={color}/>)}}/>}
             <Tab.Screen name="Calendar" component={TestScreen1} options={{title: '캘린더', headerShown: false, tabBarIcon: ({color, size}) => (<Entypo name="calendar" size={size} color={color}/>)}}/>
-            {!isAdmin && <Tab.Screen name="Stat" component={TestScreen2} options={{title: '통계', headerShown: false, tabBarIcon: ({color, size}) => (<Entypo name="bar-graph" size={size} color={color}/>)}}/>}
-            {isAdmin && <Tab.Screen name="Stat_OP" component={TestScreen3} options={{title: '통계', headerShown: false, tabBarIcon: ({color, size}) => (<Entypo name="bar-graph" size={size} color={color}/>)}}/>}
+            {!isAdmin && <Tab.Screen name="Stat" component={MyWorkStat} options={{title: '통계', headerShown: false, tabBarIcon: ({color, size}) => (<Entypo name="bar-graph" size={size} color={color}/>)}}/>}
+            {isAdmin && <Tab.Screen name="Stat_OP" component={OPWorkStat} options={{title: '통계', headerShown: false, tabBarIcon: ({color, size}) => (<Entypo name="bar-graph" size={size} color={color}/>)}}/>}
             <Tab.Screen name="Preferences" component={TestScreen4} options={{title: '설정', headerShown: false, tabBarIcon: ({color, size}) => (<Entypo name="cog" size={size} color={color}/>)}}/>
         </Tab.Navigator>
     )

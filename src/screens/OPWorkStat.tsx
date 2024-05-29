@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 
-const WorkStat_M = () => {
+const OPWorkStat = () => {
     const [employeers, setemployeers] = useState([
       { name: '알바생1', status: '근무', wait: true, approval: '', datasets: [{worktime : [37, 90, 48, 67]}] },
       { name: '알바생2', status: '근무', wait: false, approval: '', datasets: [{worktime : [0, 0, 0, 32]}] },
@@ -83,4 +83,4 @@ const styles = StyleSheet.create({
   },
   });
       
-export default WorkStat_M;
+export default OPWorkStat;

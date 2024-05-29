@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, TouchableOpacity, Dimensions } from 're
 import { BarChart } from 'react-native-chart-kit';
 /* react-native-chart-kit을 install할 때 react-native-svg도 같이 install 해 주세요.*/
 
-const WorkStat_A = () => {
+const MyWorkStat = () => {
     const [employeers, setemployeers] = useState([
       { name: '알바생1', status: '근무', wait: true, approval: '', datasets: [{worktime : [37, 90, 48, 67]}] },
       { name: '알바생2', status: '근무', wait: false, approval: '', datasets: [{worktime : [0, 0, 0, 32]}] },
@@ -86,4 +86,4 @@ const styles = StyleSheet.create({
     },
   });
       
-export default WorkStat_A;
+export default MyWorkStat;

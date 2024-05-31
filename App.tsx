@@ -49,3 +49,49 @@ const App = () => {
 };
 
 export default App;
+
+// import React, { useState } from 'react';
+// import { NavigationContainer } from '@react-navigation/native';
+// import { createStackNavigator } from '@react-navigation/stack';
+// import HomeScreen from './screens/HomeScreen';
+// import NotificationScreen from './screens/NotificationScreen';
+// import SettingsScreen from './screens/SettingsScreen';
+
+// const Stack = createStackNavigator();
+
+// function App() {
+//   const [notifications, setNotifications] = useState([]);
+
+//   const addNotification = (title, description) => {
+//     setNotifications([
+//       ...notifications,
+//       { id: (notifications.length + 1).toString(), title, description },
+//     ]);
+//   };
+
+//   const clearNotifications = () => {
+//     setNotifications([]);
+//   };
+
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator initialRouteName="Home">
+//         <Stack.Screen name="Home">
+//           {props => <HomeScreen {...props} addNotification={addNotification} />}
+//         </Stack.Screen>
+//         <Stack.Screen name="Notifications">
+//           {props => (
+//             <NotificationScreen
+//               {...props}
+//               notifications={notifications}
+//               clearNotifications={clearNotifications}
+//             />
+//           )}
+//         </Stack.Screen>
+//         <Stack.Screen name="Settings" component={SettingsScreen} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+// export default App;

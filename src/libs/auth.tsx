@@ -3,7 +3,19 @@ import firestore from '@react-native-firebase/firestore'
 
 // google제공 Authentication
 export function signIn({email,password}) {
-    return auth().signInWithEmailAndPassword(email,password);
+    return auth().signInWithEmailAndPassword(email, password)
+    .then(async ({ user }) => {
+        const userDoc = await firestore().collection('users').doc(user.uid).get();
+        const ownerDoc = await firestore().collection('owners').doc(user.uid).get();
+        
+        if (userDoc.exists) {
+            return { user, role: 'user' };
+        } else if (ownerDoc.exists) {
+            return { user, role: 'owner' };
+        } else {
+            throw new Error('User role not found');
+        }
+    });
 }
 
 // User의 가입함수
@@ -38,6 +50,7 @@ export function signUpOwner({ email, password, additionalData }) {
         throw error;
     });
 }
+
 
 export function subscribeAuth(callback) {
     return auth().onAuthStateChanged(callback);

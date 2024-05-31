@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
 
-function NotificationScreen({ notifications, clearNotifications }) {
+function NotificationScreen({ notifications = [], clearNotifications }) { // Provide default value
   const renderItem = ({ item }) => (
     <View style={styles.item}>
       <Text style={styles.title}>{item.title}</Text>

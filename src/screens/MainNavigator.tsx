@@ -11,6 +11,7 @@ import OPWorkStat from './OPWorkStat';
 import SettingScreen from './SettingScreen';
 import NotificationScreen from './NotificationScreen';
 import CalendarScreen from './CalenderScreen';
+import ManagementAlba from './ManagementAlba';
 
 const Tab = createBottomTabNavigator();
 
@@ -75,6 +76,17 @@ const MainNavigator = ({ route, addNotification }) => {
                     }}
                 />
             )}
+            {isAdmin && (
+                <Tab.Screen
+                    name="ManagementAlba" // 여기에 ManagementAlba 스크린 추가
+                    component={ManagementAlba}
+                    options={{
+                        title: '알바 관리',
+                        headerShown: false,
+                        tabBarIcon: ({ color, size }) => (<Entypo name="users" size={size} color={color} />)
+                    }}
+                />
+            )}
             <Tab.Screen
                 name="Preferences"
                 component={SettingScreen}
@@ -84,6 +96,7 @@ const MainNavigator = ({ route, addNotification }) => {
                     tabBarIcon: ({ color, size }) => (<Entypo name="cog" size={size} color={color} />)
                 }}
             />
+            
         </Tab.Navigator>
     );
 };

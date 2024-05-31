@@ -5,8 +5,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import ManagementAlba from './ManagementAlba';
 
-const MainOPScreen = () => {
+const MainOPScreen = ({navigation}) => {
     const [workplace, setWorkplace] = useState('');
     const [businessNumberInputVisible, setBusinessNumberInputVisible] = useState(false);
     const [businessNumber, setBusinessNumber] = useState('');
@@ -25,6 +26,11 @@ const MainOPScreen = () => {
             month: 'long',
             day: 'numeric'
         });
+    };
+
+    const handleManageAlba = () => {
+        // 알바 관리 스크린으로 이동
+        navigation.navigate('ManagementAlba');
     };
 
     const fetchWorkplaceAndNotice = async () => {
@@ -140,7 +146,7 @@ const MainOPScreen = () => {
             </View>
     
             {/* 알바 관리 버튼 */}
-            <TouchableOpacity style={styles.manageButton}>
+            <TouchableOpacity style={styles.manageButton} onPress={handleManageAlba}>
                 <Text style={styles.manageButtonText}>알바 관리</Text>
             </TouchableOpacity>
     

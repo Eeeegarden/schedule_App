@@ -14,9 +14,14 @@ const LoginScreen = ({ navigation }) => {
     // 로그인 주체가 owner인지 user인지 따라서 로그인 화면 분리필요
     const handleLoginPress = async () => {
         try{
-            const {user} = await signIn({email, password});
+            const {user, role} = await signIn({email, password});
             Alert.alert('로그인 성공');
-            navigation.replace('MainNavigator');
+            if (role === 'owner') {
+                navigation.replace('MainNavigator', { screen: 'Main_OP' });
+            } else {
+                navigation.replace('MainNavigator', { screen: 'Main' });
+            }
+            console.log(role);
         }
         catch (e) {
             Alert.alert('로그인 실패');

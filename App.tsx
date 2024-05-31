@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View,Button,Switch } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -10,39 +9,32 @@ import FindpwScreen from "./src/screens/FindpwScreen";
 import MainNavigator from "./src/screens/MainNavigator";
 import ManagementAlba from "./src/screens/ManagementAlba";
 import MyWorkStat from "./src/screens/MyWorkStat";
-
+import NotificationScreen from './src/screens/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 
-const MyStack = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="LoginScreen" component={LoginScreen} options={{headerShown: false}}/>
-      <Stack.Screen name="SignupScreen" component={SignupScreen} options={{headerShown: false}}/>
-      <Stack.Screen name="FindpwScreen" component={FindpwScreen} options={{headerShown: false}}/>
-    </Stack.Navigator>
-  );
-};
-
 const App = () => {
+  const [notifications, setNotifications] = useState([]);
+
+  const addNotification = (notification) => {
+    setNotifications((prevNotifications) => [...prevNotifications, notification]);
+  };
+
+  const clearNotifications = () => {
+    setNotifications([]);
+  };
+  
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-      {/* <Stack.Screen
-          name="Test"
-          component={MyWorkStat}
-          options={{headerShown: false}}
-        /> */}
-        <Stack.Screen
-          name="Auth"
-          component={MyStack}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="MainNavigator"
-          component={MainNavigator}
-          options={{headerShown: false}}
-        />
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="SignupScreen" component={SignupScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="MainNavigator" options={{ headerShown: false }}>
+          {props => <MainNavigator {...props} addNotification={addNotification} />}
+        </Stack.Screen>
+        <Stack.Screen name="NotificationScreen">
+          {props => <NotificationScreen {...props} notifications={notifications} clearNotifications={clearNotifications} />}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );

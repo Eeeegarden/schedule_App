@@ -6,17 +6,15 @@ import firestore from '@react-native-firebase/firestore';
 {/* 화면 import */}
 import MainScreen from './MainScreen';
 import MainOPScreen from './MainOPScreen';
-import TestScreen1 from './TestScreen1';
 import MyWorkStat from './MyWorkStat';
 import OPWorkStat from './OPWorkStat';
-import TestScreen4 from './TestScreen4';
 import SettingScreen from './SettingScreen';
 import NotificationScreen from './NotificationScreen';
 import CalendarScreen from './CalenderScreen';
 
 const Tab = createBottomTabNavigator();
 
-const MainNavigator = ({ route }) => {
+const MainNavigator = ({ route, addNotification }) => {
     const { screen } = route.params;
     const [initialRouteName, setInitialRouteName] = React.useState(screen);
     const [isAdmin, setIsAdmin] = React.useState(screen === 'Main_OP');
@@ -26,13 +24,14 @@ const MainNavigator = ({ route }) => {
             {!isAdmin && (
                 <Tab.Screen
                     name="Main"
-                    component={MainScreen}
                     options={{
                         title: '홈',
                         headerShown: false,
                         tabBarIcon: ({ color, size }) => (<Entypo name="home" size={size} color={color} />)
                     }}
-                />
+                >
+                {props => <MainScreen {...props} addNotification={addNotification} />}
+                </Tab.Screen>
             )}
             {isAdmin && (
                 <Tab.Screen

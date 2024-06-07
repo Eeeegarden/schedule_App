@@ -44,6 +44,8 @@ export function signUpOwner({ email, password, additionalData }) {
             ownername: additionalData.ownername,
             businessnumber: additionalData.businessnumber
         });
+        // 근무지 컬렉션에 문서 추가
+        await signUpWorkplace({ businessnumber: additionalData.businessnumber });
         return { user };
     })
     .catch(error => {
@@ -51,6 +53,19 @@ export function signUpOwner({ email, password, additionalData }) {
     });
 }
 
+// Owner 가입 시 workplace 컬렉션 문서 생성
+export async function signUpWorkplace({ businessnumber }) {
+    try {
+        await firestore().collection('workplace').add({
+            businessnumber: businessnumber,
+            notice: '',
+            workplacename: ''
+        });
+        console.log('workplace 문서 추가 완료');
+    } catch (error) {
+        console.error('workplace 문서 추가 실패');
+    }
+}
 
 export function subscribeAuth(callback) {
     return auth().onAuthStateChanged(callback);

@@ -1,11 +1,35 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
+import { forHorizontalIOS } from '@react-navigation/stack/lib/typescript/src/TransitionConfigs/CardStyleInterpolators';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+
 
 function MainScreen({ navigation, addNotification }) {
+  const [workplace, setWorkplace] = useState('');
   const [workplaceText, setWorkplaceText] = useState('');
   const [notifications, setNotifications] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [businessNumberInputVisible, setBusinessNumberInputVisible] = useState(false);
+  const [businessNumber, setBusinessNumber] = useState('');
 
+  useEffect(() => {
+    const fetchUserWorkplace = async () => {
+      const userDoc = await firestore()
+        .collection('users')
+        .doc(auth().currentUser.uid)
+        .get();
+  
+      if (userDoc.exists) {
+        setWorkplace(userDoc.data().workplace);
+      }
+    };
+  
+    fetchUserWorkplace();
+  }, []);
+
+  
   const addNotificationAndWorkplace = () => {
     if (workplaceText.trim() !== '') {
       const newNotification = { id: Date.now().toString(), title: '알림 ', description: workplaceText };
@@ -29,6 +53,37 @@ function MainScreen({ navigation, addNotification }) {
 
   const clearNotifications = () => {
     setNotifications([]);
+  };
+
+  const handleAddWorkplace = () => {
+    setModalVisible(true); // 모달 열기
+  };
+
+  const handleBusinessNumberSubmit = async () => {
+    try {
+      const fetchedWorkplace = await firestore()
+        .collection('workplace')
+        .where('businessnumber', '==', businessNumber)
+        .get();
+  
+      if (!fetchedWorkplace.empty) {
+        const workplaceData = fetchedWorkplace.docs[0].data();
+        setWorkplace(workplaceData.workplacename);
+  
+        // Firestore에 사용자 workplace 업데이트
+        await firestore()
+          .collection('users')
+          .doc(auth().currentUser.uid)
+          .update({ workplace: workplaceData.workplacename });
+  
+        setModalVisible(false); // 모달 닫기
+      } else {
+        alert('유효한 사업자 번호가 아닙니다.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('사업자 번호 등록 중 오류가 발생했습니다.');
+    }
   };
 
   return (
@@ -62,7 +117,11 @@ function MainScreen({ navigation, addNotification }) {
           style={styles.card}
           onPress={() => alert('예정 근무')}
         >
-          <Text style={styles.cardTitle}>근무지</Text>
+          <View style={styles.row}>
+          <Text style={styles.cardTitle}>근무지</Text><TouchableOpacity style={styles.manageButton} onPress={handleAddWorkplace}>
+                <Text style={styles.manageButtonText}>근무지 추가</Text>
+        </TouchableOpacity>
+        </View>
           <Text style={styles.cardSubtitle}>예정 근무 : 2024-05-31</Text>
           <Text style={styles.cardSubtitle}>00:00 ~ 23:59</Text>
           <View style={styles.row}>
@@ -87,6 +146,27 @@ function MainScreen({ navigation, addNotification }) {
             <Text style={styles.addButtonText}>추가</Text>
           </TouchableOpacity>
         </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={{color:'black'}}>사업자 번호를 입력하세요</Text>
+                        <TextInput
+                            style={styles.businessNumberInput}
+                            onChangeText={setBusinessNumber}
+                        />
+                        <TouchableOpacity style={styles.submitButton} onPress={handleBusinessNumberSubmit}>
+                            <Text style={styles.submitButtonText}>확인</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         
       </ScrollView>
     </View>
@@ -186,6 +266,51 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  modalContent: {
+      backgroundColor: 'white',
+      padding: 20,
+      borderRadius: 10,
+      width: '80%',
+  },
+  submitButton: {
+        backgroundColor: '#3498db',
+        padding: 10,
+        borderRadius: 5,
+  },
+    submitButtonText: {
+        color: 'white',
+        fontSize: 16,
+  },
+  businessNumberInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 10,
+    padding: 20,
+    marginRight: 10,
+    
+  },
+  manageButton: {
+    backgroundColor: '#3498db',
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 20,
+    marginLeft: 30,
+    width:'40%'
+  },
+  manageButtonText: {
+      fontSize: 18,
+      color: 'white',
+      fontWeight: 'bold',
+      textAlign: 'center',
+  },
+  
 });
 
 export default MainScreen;

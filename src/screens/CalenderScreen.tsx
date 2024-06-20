@@ -1,128 +1,160 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-StyleSheet,
-Dimensions,
-TouchableWithoutFeedback,
-SafeAreaView,
-View,
-Text,
-TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  TouchableWithoutFeedback,
+  SafeAreaView,
+  View,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
 import Swiper from 'react-native-swiper';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const { width } = Dimensions.get('window');
 
-const CalendarScreen = ({navigation}) => {
-const swiper = useRef();
-const [value, setValue] = useState(new Date());
-const [week, setWeek] = useState(0);
+const CalendarScreen = ({ navigation }) => {
+  const swiper = useRef();
+  const [value, setValue] = useState(new Date());
+  const [week, setWeek] = useState(0);
+  const [attendance, setAttendance] = useState([]);
 
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      const startOfWeek = moment().add(week, 'weeks').startOf('week').toDate();
+      const endOfWeek = moment().add(week, 'weeks').endOf('week').toDate();
 
-const weeks = React.useMemo(() => {
-const start = moment().add(week, 'weeks').startOf('week');
+      const attendanceSnapshot = await firestore()
+        .collection('workplaces')
+        .doc('테스트') // workplace 이름을 사용
+        .collection('attendance')
+        .where('userId', '==', auth().currentUser.uid)
+        .where('timestamp', '>=', startOfWeek)
+        .where('timestamp', '<=', endOfWeek)
+        .get();
 
-return [-1, 0, 1].map(adj => {
-    return Array.from({ length: 7 }).map((_, index) => {
-    const date = moment(start).add(adj, 'week').add(index, 'day');
-
-    return {
-        weekday: date.format('ddd'),
-        date: date.toDate(),
+      const attendanceData = attendanceSnapshot.docs.map(doc => doc.data());
+      setAttendance(attendanceData);
     };
+
+    fetchAttendance();
+  }, [week]);
+
+  const weeks = React.useMemo(() => {
+    const start = moment().add(week, 'weeks').startOf('week');
+
+    return [-1, 0, 1].map(adj => {
+      return Array.from({ length: 7 }).map((_, index) => {
+        const date = moment(start).add(adj, 'week').add(index, 'day');
+
+        return {
+          weekday: date.format('ddd'),
+          date: date.toDate(),
+        };
+      });
     });
-});
-}, [week]);
+  }, [week]);
 
-const handleSchedule = () => {
-// 여기에 Schedule 버튼 클릭 시 수행할 작업을 추가하세요
-console.log('Scheduled for:', value.toDateString());
-};
+  const handleSchedule = () => {
+    // 여기에 Schedule 버튼 클릭 시 수행할 작업을 추가하세요
+    console.log('Scheduled for:', value.toDateString());
+  };
 
-return (
-<SafeAreaView style={{ flex: 1 }}>
-    <View style={styles.container}>
-    <View style={styles.header}>
-        <Text style={styles.title}>Your Schedule</Text>
-    </View>
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Your Schedule</Text>
+        </View>
 
-    <View style={styles.picker}>
-        <Swiper
-        index={1}
-        ref={swiper}
-        loop={false}
-        showsPagination={false}
-        onIndexChanged={ind => {
-            if (ind === 1) {
-            return;
-            }
-            setTimeout(() => {
-            const newIndex = ind - 1;
-            const newWeek = week + newIndex;
-            setWeek(newWeek);
-            setValue(moment(value).add(newIndex, 'week').toDate());
-            swiper.current.scrollTo(1, false);
-            }, 100);
-        }}>
-        {weeks.map((dates, index) => (
-            <View style={styles.itemRow} key={index}>
-            {dates.map((item, dateIndex) => {
-                const isActive =
-                value.toDateString() === item.date.toDateString();
-                return (
-                <TouchableWithoutFeedback
-                    key={dateIndex}
-                    onPress={() => setValue(item.date)}>
-                    <View
-                    style={[
-                        styles.item,
-                        isActive && {
-                        backgroundColor: '#111',
-                        borderColor: '#111',
-                        },
-                    ]}>
-                    <Text
+        <View style={styles.picker}>
+          <Swiper
+            index={1}
+            ref={swiper}
+            loop={false}
+            showsPagination={false}
+            onIndexChanged={ind => {
+              if (ind === 1) {
+                return;
+              }
+              setTimeout(() => {
+                const newIndex = ind - 1;
+                const newWeek = week + newIndex;
+                setWeek(newWeek);
+                setValue(moment(value).add(newIndex, 'week').toDate());
+                swiper.current.scrollTo(1, false);
+              }, 100);
+            }}>
+            {weeks.map((dates, index) => (
+              <View style={styles.itemRow} key={index}>
+                {dates.map((item, dateIndex) => {
+                  const isActive = value.toDateString() === item.date.toDateString();
+                  const dayAttendance = attendance.filter(att => moment(att.timestamp.toDate()).isSame(item.date, 'day'));
+                  const workTime = dayAttendance.map(att => `${att.type}: ${moment(att.timestamp.toDate()).format('HH:mm')}`).join('\n');
+
+                  return (
+                    <TouchableWithoutFeedback key={dateIndex} onPress={() => setValue(item.date)}>
+                      <View
                         style={[
-                        styles.itemWeekday,
-                        isActive && { color: '#fff' },
+                          styles.item,
+                          isActive && {
+                            backgroundColor: '#111',
+                            borderColor: '#111',
+                          },
                         ]}>
-                        {item.weekday}
-                    </Text>
-                    <Text
-                        style={[
-                        styles.itemDate,
-                        isActive && { color: '#fff' },
-                        ]}>
-                        {item.date.getDate()}
-                    </Text>
-                    </View>
-                </TouchableWithoutFeedback>
-                );
-            })}
+                        <Text
+                          style={[
+                            styles.itemWeekday,
+                            isActive && { color: '#fff' },
+                          ]}>
+                          {item.weekday}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.itemDate,
+                            isActive && { color: '#fff' },
+                          ]}>
+                          {item.date.getDate()}
+                        </Text>
+                        {workTime && (
+                          <Text
+                            style={[
+                              styles.itemWorkTime,
+                              isActive && { color: '#fff' },
+                            ]}>
+                            {workTime}
+                          </Text>
+                        )}
+                      </View>
+                    </TouchableWithoutFeedback>
+                  );
+                })}
+              </View>
+            ))}
+          </Swiper>
+        </View>
+
+        <View style={{ flex: 1, paddingHorizontal: 16, paddingVertical: 24 }}>
+          <Text style={styles.subtitle}>{value.toDateString()}</Text>
+          <View style={styles.placeholder}>
+            <View style={styles.placeholderInset}>
+              {/* Replace with your content */}
             </View>
-        ))}
-        </Swiper>
-    </View>
+          </View>
+        </View>
 
-    <View style={{ flex: 1, paddingHorizontal: 16, paddingVertical: 24 }}>
-        <Text style={styles.subtitle}>{value.toDateString()}</Text>
-        <View style={styles.placeholder}>
-        <View style={styles.placeholderInset}>
-            {/* Replace with your content */}
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handleSchedule}>
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>Schedule</Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        </View>
-    </View>
-
-    <View style={styles.footer}>
-        <TouchableOpacity onPress={handleSchedule}>
-        <View style={styles.btn}>
-            <Text style={styles.btnText}>Schedule</Text>
-        </View>
-        </TouchableOpacity>
-    </View>
-    </View>
-</SafeAreaView>
-);
+      </View>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -224,6 +256,11 @@ lineHeight: 26,
 fontWeight: '600',
 color: '#fff',
 },
+itemWorkTime: {
+    fontSize: 12,
+    color: '#737373',
+    marginTop: 4,
+  },
 });
 
 export default CalendarScreen;

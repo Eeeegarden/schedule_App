@@ -6,14 +6,11 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import ManagementAlba from './ManagementAlba';
+import NotificationScreen from './NotificationScreen';
 
 const MainOPScreen = ({navigation}) => {
     const [workplace, setWorkplace] = useState('');
-    const [businessNumberInputVisible, setBusinessNumberInputVisible] = useState(false);
-    const [businessNumber, setBusinessNumber] = useState('');
-    const [modalVisible, setModalVisible] = useState(false);
     const [noticeText, setNoticeText] = useState('');
-    const [numberNotifications, setNumberNotifications] = useState(3);
 
     // 현재 로그인한 사용자의 UID 가져오기
     const userUid = auth().currentUser.uid;
@@ -30,7 +27,12 @@ const MainOPScreen = ({navigation}) => {
 
     const handleManageAlba = () => {
         // 알바 관리 스크린으로 이동
-        navigation.navigate('ManagementAlba');
+        navigation.navigate(ManagementAlba);
+    };
+
+    const handleNotification = () => {
+        // 알림 화면으로 이동
+        navigation.navigate(NotificationScreen);
     };
 
     const fetchWorkplaceAndNotice = async () => {
@@ -111,30 +113,11 @@ const MainOPScreen = ({navigation}) => {
         }
     };    
 
-    const handleAddWorkplace = () => {
-        setModalVisible(true); // 모달 열기
-    };
-
-    const handleBusinessNumberSubmit = () => {
-        // 여기서는 임의의 로직으로 사업자 번호에 맞는 근무지를 가져온다고 가정
-        const fetchedWorkplace = ''; // 사업자 번호에 따른 근무지 가져오기
-        setWorkplace(fetchedWorkplace); // 근무지 업데이트
-        setModalVisible(false); // 모달 닫기
-    };
-
     return (
         <View style={styles.container}>
-            {/* 우측 상단의 알림 아이콘과 알림 개수 */}
-            <TouchableOpacity style={styles.notificationButton}>
+            {/* 우측 상단의 알림 아이콘 */}
+            <TouchableOpacity style={styles.notificationButton} onPress={handleNotification}>
                 <Icon name="bell" size={30} color="black"/> 
-                {/* 알림 개수 표시 */}
-                {
-                    numberNotifications > 0 && (
-                        <View style={styles.notificationBadge}>
-                            <Text style={styles.notificationText}>{numberNotifications}</Text>
-                        </View>
-                    )
-                }
             </TouchableOpacity>
     
             {/* 오늘 근무하는 사람 텍스트와 날짜 */}
@@ -168,33 +151,6 @@ const MainOPScreen = ({navigation}) => {
                     multiline={true}
                 />
             </View>
-
-            {/* 근무지 추가 버튼 */}
-            <TouchableOpacity style={styles.manageButton} onPress={handleAddWorkplace}>
-                <Text style={styles.manageButtonText}>근무지 추가</Text>
-            </TouchableOpacity>
-
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(!modalVisible);
-                }}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={{color:'black'}}>사업자 번호를 입력하세요</Text>
-                        <TextInput
-                            style={styles.businessNumberInput}
-                            onChangeText={setBusinessNumber}
-                        />
-                        <TouchableOpacity style={styles.submitButton} onPress={handleBusinessNumberSubmit}>
-                            <Text style={styles.submitButtonText}>확인</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
         </View>
     );    
 };
